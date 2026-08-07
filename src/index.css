@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+:root {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.87);
+  background: #020817;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #020817;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8b5cf6, #3b82f6);
+  border-radius: 999px;
+}
+
+/* ---------- Light theme overrides ----------
+ * The app markup uses dark slate surfaces. When the user picks light mode
+ * (data-theme="light" on <html>), remap those surfaces to light equivalents
+ * so the toggle works globally without rewriting every component's classes.
+ */
+html[data-theme='light'] {
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+html[data-theme='light'] body {
+  background: #f1f5f9;
+}
+
+/* Base page + panel backgrounds */
+html[data-theme='light'] .bg-slate-950,
+html[data-theme='light'] .bg-slate-900\/75,
+html[data-theme='light'] .bg-slate-900\/70,
+html[data-theme='light'] .bg-slate-950\/70,
+html[data-theme='light'] .bg-slate-950\/60,
+html[data-theme='light'] .bg-slate-950\/50 {
+  background-color: #ffffff !important;
+}
+
+html[data-theme='light'] .bg-white\/5 {
+  background-color: #f8fafc !important;
+}
+
+/* Text colors */
+html[data-theme='light'] .text-white,
+html[data-theme='light'] .text-slate-100,
+html[data-theme='light'] .text-slate-200 {
+  color: #0f172a !important;
+}
+
+html[data-theme='light'] .text-slate-300,
+html[data-theme='light'] .text-slate-400,
+html[data-theme='light'] .text-slate-500 {
+  color: #475569 !important;
+}
+
+/* Borders */
+html[data-theme='light'] .border-white\/10,
+html[data-theme='light'] .border-white\/15 {
+  border-color: #e2e8f0 !important;
+}
+
+html[data-theme='light'] ::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
