@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Mail, Lock, ShieldCheck, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '../lib/api'
+import SystemStatus from '../components/SystemStatus'
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -25,7 +26,10 @@ function LoginPage() {
       toast.success(`Welcome back, ${user.name}`)
       navigate('/dashboard')
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Login failed. Please try again.')
+      const d = error.response?.data?.detail
+      const msg = Array.isArray(d) ? d.map((x) => x.msg).join(', ')
+        : typeof d === 'string' ? d : 'Login failed. Please try again.'
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -48,6 +52,9 @@ function LoginPage() {
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-semibold text-white">Welcome back</h1>
           <p className="mt-2 text-sm text-slate-400">Sign in to continue monitoring trust and safety operations.</p>
+          <div className="mt-4 flex justify-center">
+            <SystemStatus />
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

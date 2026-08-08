@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ScanFace, UploadCloud, ShieldCheck, ArrowLeft, RotateCcw, X, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '../lib/api'
+import SystemStatus from '../components/SystemStatus'
 
 const initialState = {
   product_name: 'Aether Smartwatch Pro',
@@ -98,13 +99,16 @@ function CounterfeitDetectionPage() {
           <ArrowLeft className="h-4 w-4" /> Back to dashboard
         </button>
 
-        <div className="mb-8 flex items-center gap-3">
+        <div className="mb-8 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/20 text-violet-200"><ScanFace className="h-6 w-6" /></div>
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-violet-300">AI Agent</p>
             <h1 className="text-3xl font-semibold text-white">Counterfeit Detection Agent</h1>
             <p className="mt-1 text-sm text-slate-400">Image analysis, MSRP comparison, and packaging authentication.</p>
           </div>
+        </div>
+          <SystemStatus className="hidden sm:inline-flex" />
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { toast } from 'sonner'
 import api from '../lib/api'
+import SystemStatus from '../components/SystemStatus'
 
 const DECISION_COLORS = {
   Block: '#f43f5e', Blocked: '#f43f5e', Counterfeit: '#f43f5e', Removed: '#f43f5e',
@@ -53,9 +54,12 @@ function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-10 text-slate-100">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8">
-          <p className="text-xs uppercase tracking-[0.2em] text-violet-300">Insights</p>
-          <h1 className="mt-2 text-3xl font-semibold text-white">Analytics overview</h1>
+        <div className="mb-8 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-violet-300">Insights</p>
+            <h1 className="mt-2 text-3xl font-semibold text-white">Analytics overview</h1>
+          </div>
+          <SystemStatus className="hidden md:inline-flex" />
         </div>
 
         <div className="grid gap-6 md:grid-cols-4">

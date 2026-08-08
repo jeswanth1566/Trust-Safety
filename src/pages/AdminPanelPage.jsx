@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Shield, Users, Bell, ServerCog, Search, UserCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '../lib/api'
+import SystemStatus from '../components/SystemStatus'
 
 const alerts = [
   { name: 'Policy drift', value: '2 alerts', tone: 'rose' },
@@ -71,9 +72,12 @@ function AdminPanelPage() {
             <p className="text-xs uppercase tracking-[0.2em] text-violet-300">Admin console</p>
             <h1 className="mt-2 text-3xl font-semibold text-white">Operations control</h1>
           </div>
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
-            <Search className="h-4 w-4 text-slate-400" />
-            <input value={userSearch} onChange={(e) => setUserSearch(e.target.value)} placeholder="Search users" className="bg-transparent outline-none placeholder:text-slate-500" />
+          <div className="flex items-center gap-3">
+            <SystemStatus className="hidden md:inline-flex" />
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
+              <Search className="h-4 w-4 text-slate-400" />
+              <input value={userSearch} onChange={(e) => setUserSearch(e.target.value)} placeholder="Search users" className="bg-transparent outline-none placeholder:text-slate-500" />
+            </div>
           </div>
         </div>
 

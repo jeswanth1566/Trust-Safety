@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { modelMetrics, sellers } from '../data/dashboard'
 import api from '../lib/api'
 import ThemeToggle from '../components/ThemeToggle'
+import SystemStatus from '../components/SystemStatus'
 
 const COLORS = ['#8b5cf6', '#22c55e', '#3b82f6', '#f59e0b']
 
@@ -97,11 +98,8 @@ function DashboardPage() {
           </nav>
 
           <div className="mt-10 rounded-[1.5rem] border border-violet-500/20 bg-violet-500/5 p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-violet-200">System health</p>
-            <div className="mt-3 flex items-center justify-between text-sm text-slate-200">
-              <span>Runtime</span>
-              <span className="text-emerald-300">99.98%</span>
-            </div>
+            <p className="mb-3 text-xs uppercase tracking-[0.2em] text-violet-200">System health</p>
+            <SystemStatus className="w-full justify-center" />
           </div>
 
           <button onClick={handleLogout} className="mt-10 flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-left text-sm text-slate-300 transition hover:border-rose-500/30 hover:text-white">
