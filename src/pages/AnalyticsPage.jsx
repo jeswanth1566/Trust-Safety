@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { AreaChart, Area, BarChart, Bar, Cell, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '../lib/api'
@@ -11,6 +11,9 @@ const DECISION_COLORS = {
   Review: '#f59e0b',
   Approve: '#22c55e', Approved: '#22c55e', Authentic: '#22c55e',
 }
+
+const barColor = (name) => DECISION_COLORS[name] || '#3b82f6'
+
 
 function AnalyticsPage() {
   const navigate = useNavigate()
@@ -79,7 +82,7 @@ function AnalyticsPage() {
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <div className="rounded-[1.8rem] border border-white/10 bg-slate-900/70 p-5">
-            <div className="mb-5 text-lg font-semibold text-white">Decision volume (6-month trend)</div>
+            <div className="mb-5 text-lg font-semibold text-white">Decision volume — flow (6-month trend)</div>
             <div className="h-72">
               {loading ? (
                 <div className="h-full w-full animate-pulse rounded-2xl bg-white/5" />
@@ -87,18 +90,36 @@ function AnalyticsPage() {
                 <div className="flex h-full items-center justify-center text-slate-400">No data yet — run some agent analyses.</div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={trend}>
+                  <AreaChart data={trend} margin={{ top: 10, right: 12, left: 0, bottom: 0 }}>
                     <defs>
-                      <linearGradient id="fraudFill" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.05} />
+                      {/* Horizontal flowing gradient along the stroke */}
+                      <linearGradient id="flowStroke" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#8b5cf6" />
+                        <stop offset="50%" stopColor="#3b82f6" />
+                        <stop offset="100%" stopColor="#22d3ee" />
+                      </linearGradient>
+                      {/* Soft flowing area beneath the line */}
+                      <linearGradient id="flowFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="#22d3ee" stopOpacity={0.02} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid stroke="#293548" strokeDasharray="3 3" />
-                    <XAxis dataKey="month" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" allowDecimals={false} />
-                    <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: 12 }} />
-                    <Area type="monotone" dataKey="decisions" stroke="#8b5cf6" fill="url(#fraudFill)" strokeWidth={3} />
+                    <CartesianGrid stroke="#293548" strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="month" stroke="#94a3b8" tickLine={false} axisLine={{ stroke: '#334155' }} />
+                    <YAxis stroke="#94a3b8" allowDecimals={false} tickLine={false} axisLine={false} width={32} />
+                    <Tooltip cursor={{ stroke: '#22d3ee', strokeWidth: 1, strokeDasharray: '4 4' }} contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#fff' }} />
+                    <Area
+                      type="natural"
+                      dataKey="decisions"
+                      stroke="url(#flowStroke)"
+                      fill="url(#flowFill)"
+                      strokeWidth={4}
+                      dot={{ r: 4, fill: '#22d3ee', stroke: '#fff', strokeWidth: 1 }}
+                      activeDot={{ r: 6 }}
+                      isAnimationActive
+                      animationDuration={1400}
+                      animationEasing="ease-in-out"
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               )}
@@ -114,16 +135,28 @@ function AnalyticsPage() {
                 <div className="flex h-full items-center justify-center text-slate-400">No decisions recorded yet.</div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={byDecision}>
-                    <CartesianGrid stroke="#293548" strokeDasharray="3 3" />
-                    <XAxis dataKey="name" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" allowDecimals={false} />
-                    <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: 12 }} />
-                    <Bar dataKey="count" radius={[8, 8, 0, 0]} fill="#3b82f6" />
+                  <BarChart data={byDecision} margin={{ top: 16, right: 12, left: 0, bottom: 0 }}>
+                    <CartesianGrid stroke="#293548" strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="name" stroke="#94a3b8" tickLine={false} axisLine={{ stroke: '#334155' }} />
+                    <YAxis stroke="#94a3b8" allowDecimals={false} tickLine={false} axisLine={false} width={32} />
+                    <Tooltip cursor={{ fill: 'rgba(148,163,184,0.12)' }} contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#fff' }} />
+                    <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                      {byDecision.map((entry) => (
+                        <Cell key={entry.name} fill={barColor(entry.name)} />
+                      ))}
+                      <LabelList dataKey="count" position="top" fill="#e2e8f0" fontSize={12} />
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               )}
             </div>
+            {!loading && byDecision.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-400">
+                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#22c55e' }} /> Approved / Authentic</span>
+                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#f59e0b' }} /> Review</span>
+                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#f43f5e' }} /> Blocked / Counterfeit / Removed</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
