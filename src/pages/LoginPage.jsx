@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ShieldCheck, ArrowRight, Eye, EyeOff, UserCircle2, X, ChevronDown } from 'lucide-react'
+import { Mail, Lock, ShieldCheck, ArrowRight, ArrowLeft, Eye, EyeOff, UserCircle2, X, ChevronDown } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '../lib/api'
 import SystemStatus from '../components/SystemStatus'
@@ -80,6 +80,9 @@ function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-8 text-slate-100">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.35),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.25),_transparent_30%)]" />
       <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-md rounded-[2rem] border border-white/10 bg-slate-900/70 p-8 shadow-2xl backdrop-blur-xl">
+        <Link to="/" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
+          <ArrowLeft className="h-4 w-4" /> Back to home
+        </Link>
         <div className="mb-8 flex items-center justify-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-blue-500 shadow-lg shadow-violet-500/30">
             <ShieldCheck className="h-6 w-6" />
