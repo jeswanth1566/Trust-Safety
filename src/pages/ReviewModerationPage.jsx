@@ -13,6 +13,14 @@ const initialState = {
   sentiment_score: 0.91,
 }
 
+const blankState = {
+  reviewer_id: '',
+  text: '',
+  stars: '',
+  historical_reviews: '',
+  sentiment_score: '',
+}
+
 const verdictStyle = (prob) => {
   if (prob >= 70) return { ring: 'border-rose-500/40 bg-rose-500/10', text: 'text-rose-300', bar: 'from-rose-500 to-orange-500', Icon: XCircle, label: 'Likely fake' }
   if (prob >= 40) return { ring: 'border-amber-500/40 bg-amber-500/10', text: 'text-amber-300', bar: 'from-amber-400 to-yellow-500', Icon: AlertTriangle, label: 'Needs review' }
@@ -23,6 +31,7 @@ function ReviewModerationPage() {
   const navigate = useNavigate()
   const [payload, setPayload] = useState(initialState)
   const [result, setResult] = useState(null)
+  const [noResult, setNoResult] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleChange = (event) => {
@@ -31,13 +40,22 @@ function ReviewModerationPage() {
   }
 
   const handleReset = () => {
-    setPayload(initialState)
+    setPayload(blankState)
     setResult(null)
-    toast.info('Form reset to defaults')
+    setNoResult(false)
+    toast.info('Form cleared')
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+
+    // If the form is essentially empty, show a plain "No result" state instead of calling the API.
+    if (!String(payload.text).trim() && !String(payload.reviewer_id).trim()) {
+      setResult(null)
+      setNoResult(true)
+      return
+    }
+    setNoResult(false)
     setLoading(true)
     try {
       const response = await api.post('/api/agents/review-moderation', {
@@ -109,6 +127,7 @@ function ReviewModerationPage() {
               <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-blue-500 px-5 py-3 font-medium text-white shadow-lg shadow-violet-500/30 transition hover:scale-[1.01] disabled:opacity-70">
                 {loading ? 'Analyzing…' : 'Moderate review'}
               </button>
+              <button type="button" onClick={() => { setPayload(initialState); setResult(null); setNoResult(false); toast.info('Filled with default details') }} className="inline-flex items-center gap-2 rounded-2xl border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-sm text-violet-200 transition hover:bg-violet-500/20">Fill</button>
               <button type="button" onClick={handleReset} className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300 transition hover:text-white">
                 <RotateCcw className="h-4 w-4" /> Reset
               </button>
@@ -164,7 +183,12 @@ function ReviewModerationPage() {
             ) : (
               <div className="mt-10 flex h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-slate-950/50 text-center text-slate-400">
                 <MessageSquareText className="mb-3 h-10 w-10 text-violet-200" />
-                No moderation result yet. Submit a review to classify it.
+                {noResult ? (
+                  <>
+                    <div className="text-lg font-semibold text-white">No result</div>
+                    <p className="mt-1 text-sm">No details were provided. Enter a review (or click Fill) and analyze.</p>
+                  </>
+                ) : 'No moderation result yet. Submit a review to classify it.'}
               </div>
             )}
           </div>

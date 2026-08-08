@@ -22,6 +22,7 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [showNotifications, setShowNotifications] = useState(false)
+  const [recentLogs, setRecentLogs] = useState([])
 
   useEffect(() => {
     const savedUser = localStorage.getItem('authUser')
@@ -37,6 +38,15 @@ function DashboardPage() {
       try {
         const res = await api.get('/api/audit/dashboard')
         setData(res.data)
+        // Load the user's saved analysis history to surface right after login.
+        try {
+          const logs = await api.get('/api/audit/logs', { params: { limit: 8 } })
+          const records = logs.data.records || []
+          setRecentLogs(records)
+          if (records.length > 0) {
+            toast.success(`Welcome back — ${records.length} recent ${records.length === 1 ? 'analysis' : 'analyses'} in your history`)
+          }
+        } catch { /* saved logs are optional */ }
       } catch (error) {
         toast.error(error.response?.data?.detail || 'Failed to load dashboard data')
       } finally {
@@ -64,6 +74,17 @@ function DashboardPage() {
   const filteredAlerts = alerts.filter((a) =>
     !search || `${a.title} ${a.detail} ${a.severity}`.toLowerCase().includes(search.toLowerCase())
   )
+
+  const logDecisionTone = (d) =>
+    ['Block', 'Blocked', 'Counterfeit', 'Removed'].includes(d) ? 'bg-rose-500/10 text-rose-300'
+    : d === 'Review' ? 'bg-amber-500/10 text-amber-300'
+    : 'bg-emerald-500/10 text-emerald-300'
+
+  const fmtLogTime = (iso) => {
+    if (!iso) return '—'
+    const d = new Date(iso)
+    return Number.isNaN(d.getTime()) ? iso : d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  }
 
   const severityDot = (s) =>
     s === 'critical' ? 'bg-rose-400' : s === 'high' ? 'bg-amber-400' : s === 'medium' ? 'bg-cyan-400' : 'bg-emerald-400'
@@ -265,6 +286,48 @@ function DashboardPage() {
                 ))}
               </div>
             </div>
+          </section>
+          {/* Saved analysis history — surfaced on login */}
+          <section className="mt-8 rounded-[1.8rem] border border-white/10 bg-slate-900/75 p-5">
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <div className="text-lg font-semibold text-white">Your recent activity</div>
+                <div className="text-sm text-slate-400">Saved analysis history from the database</div>
+              </div>
+              <button onClick={() => navigate('/audit-logs')} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-violet-300 transition hover:text-violet-200">View all logs</button>
+            </div>
+            {loading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-14 animate-pulse rounded-2xl bg-white/5" />)}
+              </div>
+            ) : recentLogs.length === 0 ? (
+              <div className="flex h-32 flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 text-center text-slate-400">
+                No saved analyses yet. Run a risk, counterfeit, or review check to build your history.
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-2xl border border-white/10">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-white/5 text-xs uppercase tracking-wide text-slate-400">
+                    <tr>
+                      <th className="px-4 py-3">Agent</th>
+                      <th className="px-4 py-3">Decision</th>
+                      <th className="hidden px-4 py-3 md:table-cell">Reason</th>
+                      <th className="px-4 py-3">When</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentLogs.map((log) => (
+                      <tr key={log.id} className="border-t border-white/5 transition hover:bg-white/5">
+                        <td className="px-4 py-3 text-white">{log.agent}</td>
+                        <td className="px-4 py-3"><span className={`rounded-full px-2 py-1 text-xs ${logDecisionTone(log.decision)}`}>{log.decision}</span></td>
+                        <td className="hidden max-w-xs truncate px-4 py-3 text-slate-400 md:table-cell">{log.reason}</td>
+                        <td className="px-4 py-3 text-slate-400">{fmtLogTime(log.time)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
         </main>
       </div>

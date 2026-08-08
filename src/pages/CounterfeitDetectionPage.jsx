@@ -14,6 +14,15 @@ const initialState = {
   image_quality: 90,
 }
 
+const blankState = {
+  product_name: '',
+  msrp: '',
+  selling_price: '',
+  logo_match_score: '',
+  package_score: '',
+  image_quality: '',
+}
+
 const verdictStyle = (decision) => {
   switch (decision) {
     case 'Counterfeit':
@@ -30,6 +39,7 @@ function CounterfeitDetectionPage() {
   const fileInputRef = useRef(null)
   const [payload, setPayload] = useState(initialState)
   const [result, setResult] = useState(null)
+  const [noResult, setNoResult] = useState(false)
   const [loading, setLoading] = useState(false)
   const [imagePreview, setImagePreview] = useState(null)
   const [imageName, setImageName] = useState('')
@@ -63,14 +73,23 @@ function CounterfeitDetectionPage() {
   }
 
   const handleReset = () => {
-    setPayload(initialState)
+    setPayload(blankState)
     setResult(null)
+    setNoResult(false)
     clearImage()
-    toast.info('Form reset to defaults')
+    toast.info('Form cleared')
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+
+    // If the form is essentially empty, show a plain "No result" state instead of calling the API.
+    if (!String(payload.product_name).trim() && !String(payload.msrp).trim() && !String(payload.selling_price).trim()) {
+      setResult(null)
+      setNoResult(true)
+      return
+    }
+    setNoResult(false)
     setLoading(true)
     try {
       const response = await api.post('/api/agents/counterfeit-detection', {
@@ -133,7 +152,7 @@ function CounterfeitDetectionPage() {
             )}
 
             <div className="grid gap-5 md:grid-cols-2">
-              <label className="block md:col-span-2">
+            <label className="block md:col-span-2">
                 <span className="mb-2 block text-sm text-slate-300">Product name</span>
                 <input name="product_name" value={payload.product_name} onChange={handleChange} className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-3 py-3 text-white outline-none focus:border-violet-400" />
               </label>
@@ -163,6 +182,7 @@ function CounterfeitDetectionPage() {
               <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-blue-500 px-5 py-3 font-medium text-white shadow-lg shadow-violet-500/30 transition hover:scale-[1.01] disabled:opacity-70">
                 {loading ? 'Scanning…' : 'Analyze authenticity'}
               </button>
+              <button type="button" onClick={() => { setPayload(initialState); setResult(null); setNoResult(false); toast.info('Filled with default details') }} className="inline-flex items-center gap-2 rounded-2xl border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-sm text-violet-200 transition hover:bg-violet-500/20">Fill</button>
               <button type="button" onClick={handleReset} className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300 transition hover:text-white">
                 <RotateCcw className="h-4 w-4" /> Reset
               </button>
@@ -227,7 +247,12 @@ function CounterfeitDetectionPage() {
             ) : (
               <div className="mt-10 flex h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-slate-950/50 text-center text-slate-400">
                 <ShieldCheck className="mb-3 h-10 w-10 text-violet-200" />
-                No detection yet. Submit a listing to assess authenticity.
+                {noResult ? (
+                  <>
+                    <div className="text-lg font-semibold text-white">No result</div>
+                    <p className="mt-1 text-sm">No details were provided. Enter listing details (or click Fill) and analyze.</p>
+                  </>
+                ) : 'No detection yet. Submit a listing to assess authenticity.'}
               </div>
             )}
           </div>

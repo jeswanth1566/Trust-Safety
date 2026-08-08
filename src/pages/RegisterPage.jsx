@@ -46,6 +46,12 @@ function RegisterPage() {
       localStorage.setItem('token', access_token)
       localStorage.setItem('authUser', JSON.stringify(user))
       localStorage.setItem('tokenType', response.data.token_type || 'bearer')
+      // Remember this account for the login suggestions (email + name only).
+      try {
+        const list = (JSON.parse(localStorage.getItem('savedAccounts')) || []).filter((a) => a.email !== user.email)
+        list.unshift({ email: user.email, name: user.name })
+        localStorage.setItem('savedAccounts', JSON.stringify(list.slice(0, 6)))
+      } catch { /* ignore */ }
       toast.success(`Account created for ${user.name} — welcome!`)
       navigate('/dashboard')
     } catch (error) {

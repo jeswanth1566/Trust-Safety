@@ -16,6 +16,17 @@ const initialState = {
   mismatched_billing: true,
 }
 
+const blankState = {
+  order_id: '',
+  customer_id: '',
+  amount: '',
+  shipping_country: '',
+  device_velocity: '',
+  chargeback_history: '',
+  previous_orders: '',
+  mismatched_billing: false,
+}
+
 // Verdict → color + icon mapping for professional, at-a-glance styling.
 const verdictStyle = (decision) => {
   switch (decision) {
@@ -32,6 +43,7 @@ function RiskScoringPage() {
   const navigate = useNavigate()
   const [payload, setPayload] = useState(initialState)
   const [result, setResult] = useState(null)
+  const [noResult, setNoResult] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleInputChange = (event) => {
@@ -43,13 +55,22 @@ function RiskScoringPage() {
   }
 
   const handleReset = () => {
-    setPayload(initialState)
+    setPayload(blankState)
     setResult(null)
-    toast.info('Form reset to defaults')
+    setNoResult(false)
+    toast.info('Form cleared')
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+
+    // If the form is essentially empty, show a plain "No result" state instead of calling the API.
+    if (!String(payload.order_id).trim() && !String(payload.customer_id).trim() && !String(payload.amount).trim()) {
+      setResult(null)
+      setNoResult(true)
+      return
+    }
+    setNoResult(false)
     setLoading(true)
 
     try {
@@ -133,6 +154,7 @@ function RiskScoringPage() {
                 {loading ? 'Evaluating…' : 'Analyze order risk'}
                 <ArrowRight className="h-4 w-4" />
               </button>
+              <button type="button" onClick={() => { setPayload(initialState); setResult(null); setNoResult(false); toast.info('Filled with default details') }} className="inline-flex items-center gap-2 rounded-2xl border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-sm text-violet-200 transition hover:bg-violet-500/20">Fill</button>
               <button type="button" onClick={handleReset} className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300 transition hover:text-white">
                 <RotateCcw className="h-4 w-4" /> Reset
               </button>
@@ -205,7 +227,12 @@ function RiskScoringPage() {
             ) : (
               <div className="mt-10 flex h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-slate-950/50 text-center text-slate-400">
                 <ShieldAlert className="mb-3 h-10 w-10 text-violet-200" />
-                No analysis yet. Submit an order to receive a risk verdict.
+                {noResult ? (
+                  <>
+                    <div className="text-lg font-semibold text-white">No result</div>
+                    <p className="mt-1 text-sm">No details were provided. Enter order details (or click Fill) and analyze.</p>
+                  </>
+                ) : 'No analysis yet. Submit an order to receive a risk verdict.'}
               </div>
             )}
           </div>
