@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, ShieldCheck, Sparkles, ScanFace, TrendingUp, Zap, Check, Globe, ChevronRight, Layers3, Activity, Cpu, BellRing } from 'lucide-react'
 import { featureCards, aiAgents, stats, workflowSteps } from '../data/landing'
@@ -41,8 +42,8 @@ function LandingPage() {
 
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <a href="/login" className="rounded-full border border-white/15 px-4 py-2 text-sm text-slate-200 transition hover:border-violet-400 hover:text-white">Login</a>
-            <a href="/dashboard" className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-violet-500/40 transition hover:scale-[1.02]">Book demo</a>
+            <Link to="/login" className="rounded-full border border-white/15 px-4 py-2 text-sm text-slate-200 transition hover:border-violet-400 hover:text-white">Login</Link>
+            <Link to="/register" className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-violet-500/40 transition hover:scale-[1.02]">Book demo</Link>
           </div>
         </nav>
       </header>
@@ -63,10 +64,10 @@ function LandingPage() {
                 Detect fraud, counterfeit listings, and harmful reviews before they impact revenue with an enterprise-grade AI trust and safety platform built for global commerce.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-4">
-                <a href="/dashboard" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-3 font-medium text-white shadow-xl shadow-violet-500/30 transition hover:scale-[1.02]">
+                <Link to="/login" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-3 font-medium text-white shadow-xl shadow-violet-500/30 transition hover:scale-[1.02]">
                   Launch dashboard
                   <ArrowRight className="h-4 w-4" />
-                </a>
+                </Link>
                 <a href="#features" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 font-medium text-slate-200 transition hover:border-blue-400 hover:text-white">
                   Explore platform
                 </a>
@@ -161,7 +162,7 @@ function LandingPage() {
                 <p className="text-sm font-medium uppercase tracking-[0.24em] text-cyan-300">AI agents</p>
                 <h2 className="mt-4 text-3xl font-semibold text-white md:text-4xl">Specialized enforcement layers</h2>
               </div>
-              <a href="/risk-scoring" className="hidden items-center gap-2 text-sm text-violet-200 md:inline-flex">View agent console <ChevronRight className="h-4 w-4" /></a>
+              <Link to="/login" className="hidden items-center gap-2 text-sm text-violet-200 md:inline-flex">View agent console <ChevronRight className="h-4 w-4" /></Link>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">

@@ -25,6 +25,8 @@ function AuditLogsPage() {
   const [records, setRecords] = useState([])
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
+  const [showFilters, setShowFilters] = useState(false)
+  const [decisionFilter, setDecisionFilter] = useState('all')
 
   // Debounced fetch whenever the search query changes.
   useEffect(() => {
@@ -67,6 +69,14 @@ function AuditLogsPage() {
     toast.success('Audit logs exported')
   }
 
+  const visibleRecords = records.filter((r) => {
+    if (decisionFilter === 'all') return true
+    if (decisionFilter === 'blocked') return ['Block', 'Blocked', 'Counterfeit', 'Removed'].includes(r.decision)
+    if (decisionFilter === 'review') return r.decision === 'Review'
+    if (decisionFilter === 'approved') return ['Approve', 'Approved', 'Authentic'].includes(r.decision)
+    return true
+  })
+
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-10 text-slate-100">
       <div className="mx-auto max-w-6xl">
@@ -76,7 +86,19 @@ function AuditLogsPage() {
             <h1 className="text-3xl font-semibold text-white">Audit logs</h1>
           </div>
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"><Filter className="h-4 w-4" /> Filters</button>
+            <div className="relative">
+              <button onClick={() => setShowFilters((v) => !v)} className={`flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm transition ${decisionFilter !== 'all' ? 'border-violet-500/40 bg-violet-500/10 text-violet-200' : 'border-white/10 bg-white/5 text-slate-200 hover:text-white'}`}><Filter className="h-4 w-4" /> Filters{decisionFilter !== 'all' ? ' (1)' : ''}</button>
+              {showFilters && (
+                <div className="absolute right-0 z-50 mt-2 w-52 rounded-2xl border border-white/10 bg-slate-900/95 p-2 shadow-2xl backdrop-blur-xl">
+                  <div className="px-2 py-1 text-xs uppercase tracking-wide text-slate-500">Decision</div>
+                  {[['all', 'All decisions'], ['blocked', 'Blocked / removed'], ['review', 'Review'], ['approved', 'Approved']].map(([val, label]) => (
+                    <button key={val} onClick={() => { setDecisionFilter(val); setShowFilters(false) }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition hover:bg-white/5 ${decisionFilter === val ? 'text-violet-300' : 'text-slate-300'}`}>
+                      {label}{decisionFilter === val && <span>✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <button onClick={handleExport} className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-medium text-white"><Download className="h-4 w-4" /> Export</button>
           </div>
         </div>
@@ -97,7 +119,7 @@ function AuditLogsPage() {
           <div className="rounded-[2rem] border border-white/10 bg-slate-900/70 p-5">
             <div className="mb-5 flex items-center justify-between">
               <div className="text-lg font-semibold text-white">Decision timeline</div>
-              {!loading && <div className="text-sm text-violet-300">{records.length} records</div>}
+              {!loading && <div className="text-sm text-violet-300">{visibleRecords.length} records</div>}
             </div>
 
             <div className="space-y-4">
@@ -110,13 +132,13 @@ function AuditLogsPage() {
                     <div className="mt-3 h-3 w-28 rounded bg-white/5" />
                   </div>
                 ))
-              ) : records.length === 0 ? (
+              ) : visibleRecords.length === 0 ? (
                 <div className="flex h-40 flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 text-center text-slate-400">
                   <ShieldCheck className="mb-3 h-8 w-8 text-violet-200" />
                   No decisions logged yet. Run an agent analysis to populate the timeline.
                 </div>
               ) : (
-                records.map((record) => (
+                visibleRecords.map((record) => (
                   <div key={record.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div>

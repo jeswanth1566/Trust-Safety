@@ -26,6 +26,7 @@ function AdminPanelPage() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [forbidden, setForbidden] = useState(false)
+  const [userSearch, setUserSearch] = useState('')
 
   useEffect(() => {
     ;(async () => {
@@ -58,6 +59,10 @@ function AdminPanelPage() {
     ['System status', 'Nominal', ServerCog],
   ]
 
+  const visibleUsers = users.filter((u) =>
+    !userSearch || `${u.name} ${u.email} ${u.role}`.toLowerCase().includes(userSearch.toLowerCase())
+  )
+
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-10 text-slate-100">
       <div className="mx-auto max-w-6xl">
@@ -68,7 +73,7 @@ function AdminPanelPage() {
           </div>
           <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200">
             <Search className="h-4 w-4 text-slate-400" />
-            Search settings
+            <input value={userSearch} onChange={(e) => setUserSearch(e.target.value)} placeholder="Search users" className="bg-transparent outline-none placeholder:text-slate-500" />
           </div>
         </div>
 
@@ -100,10 +105,10 @@ function AdminPanelPage() {
                     Array.from({ length: 3 }).map((_, i) => (
                       <div key={i} className="h-16 animate-pulse rounded-2xl bg-white/5" />
                     ))
-                  ) : users.length === 0 ? (
+                  ) : visibleUsers.length === 0 ? (
                     <div className="flex h-32 items-center justify-center rounded-2xl border border-dashed border-white/10 text-slate-400">No users found.</div>
                   ) : (
-                    users.map((user) => (
+                    visibleUsers.map((user) => (
                       <div key={user.email} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4">
                         <div className="flex items-center gap-3">
                           <UserCircle2 className="h-8 w-8 text-violet-200" />
