@@ -47,7 +47,7 @@ function DashboardPage() {
 
   const handleLogout = () => {
     localStorage.clear()
-    navigate('/login')
+    navigate('/')
   }
 
   const k = data?.kpis || {}

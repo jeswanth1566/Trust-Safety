@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '../lib/api'
 import SystemStatus from '../components/SystemStatus'
@@ -11,6 +13,7 @@ const DECISION_COLORS = {
 }
 
 function AnalyticsPage() {
+  const navigate = useNavigate()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -54,6 +57,9 @@ function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-10 text-slate-100">
       <div className="mx-auto max-w-6xl">
+        <button onClick={() => navigate('/dashboard')} className="mb-6 inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
+          <ArrowLeft className="h-4 w-4" /> Back to dashboard
+        </button>
         <div className="mb-8 flex items-start justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-violet-300">Insights</p>

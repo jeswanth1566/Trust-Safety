@@ -43,7 +43,7 @@ function LandingPage() {
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <Link to="/login" className="rounded-full border border-white/15 px-4 py-2 text-sm text-slate-200 transition hover:border-violet-400 hover:text-white">Login</Link>
-            <Link to="/register" className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-violet-500/40 transition hover:scale-[1.02]">Book demo</Link>
+            <Link to="/register" className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-violet-500/40 transition hover:scale-[1.02]">Sign up</Link>
           </div>
         </nav>
       </header>
